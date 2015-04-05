@@ -93,6 +93,10 @@ module SchemaPlus
           options[:deferrable]
         end
 
+        def not_valid
+          options[:not_valid]
+        end
+
         # Dumps a definition of foreign key.
         def to_dump(opts={})
           dump = (opts[:inline] ? "  t.foreign_key" : "add_foreign_key #{table_name.inspect},")
@@ -101,6 +105,7 @@ module SchemaPlus
           dump << ", :on_update => #{on_update.inspect}" if on_update
           dump << ", :on_delete => #{on_delete.inspect}" if on_delete
           dump << ", :deferrable => #{deferrable.inspect}" if deferrable
+          dump << ", :not_valid => #{not_valid.inspect}" if not_valid
           dump << ", :name => #{name.inspect}" if name
           dump << "\n"
           dump
@@ -113,6 +118,7 @@ module SchemaPlus
           sql << " ON DELETE #{ACTIONS[on_delete]}" if on_delete
           sql << " DEFERRABLE" if deferrable
           sql << " INITIALLY DEFERRED" if deferrable == :initially_deferred
+          sql << " NOT VALID" if not_valid
           sql
         end
 
@@ -164,3 +170,4 @@ module SchemaPlus
     end
   end
 end
+

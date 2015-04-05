@@ -383,9 +383,18 @@ describe ActiveRecord::Migration do
     [false, true, :initially_deferred].each do |status|
       it "should create and detect deferrable #{status.inspect}", :mysql => :skip do
         recreate_table @model do |t|
-          t.integer :user_id,   :on_delete => :cascade, :deferrable => status
+          t.integer :user_id, :on_delete => :cascade, :deferrable => status
         end
         expect(@model).to reference.on(:user_id).deferrable(status)
+      end
+    end
+
+    [false, true].each do |status|
+      xit "should create and detect not valid #{status}", :postgresql => :only do
+        recreate_table @model do |t|
+          t.integer :user_id, :on_delete => :cascade, :not_valid => status
+        end
+        expect(@model).to reference.on(:user_id).not_valid(status)
       end
     end
 

@@ -81,7 +81,7 @@ module SchemaPlus::ActiveRecord
 
       args[:references] = [args[:references], :id] unless args[:references].is_a? Array
 
-      [:on_update, :on_delete, :deferrable].each do |shortcut|
+      [:on_update, :on_delete, :deferrable, :not_valid].each do |shortcut|
         args[shortcut] ||= column_options[shortcut] if column_options.has_key? shortcut
       end
 
@@ -115,3 +115,4 @@ module SchemaPlus::ActiveRecord
 
   end
 end
+

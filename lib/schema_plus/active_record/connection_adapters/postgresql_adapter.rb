@@ -402,7 +402,7 @@ module SchemaPlus
           foreign_keys = []
 
           query(sql, name).each do |row|
-            if row[1] =~ /^FOREIGN KEY \((.+?)\) REFERENCES (.+?)\((.+?)\)( ON UPDATE (.+?))?( ON DELETE (.+?))?( (DEFERRABLE|NOT DEFERRABLE)( (INITIALLY DEFERRED|INITIALLY IMMEDIATE))?)?$/
+            if row[1] =~ /^FOREIGN KEY \((.+?)\) REFERENCES (.+?)\((.+?)\)( ON UPDATE (.+?))?( ON DELETE (.+?))?( (DEFERRABLE|NOT DEFERRABLE)( (INITIALLY DEFERRED|INITIALLY IMMEDIATE))?)?( (NOT VALID))?$/
               name = row[0]
               from_table_name = row[2]
               column_names = $1
@@ -412,6 +412,7 @@ module SchemaPlus
               on_delete = $7
               deferrable = $9 == "DEFERRABLE"
               deferrable = :initially_deferred if ($11 == "INITIALLY DEFERRED" )
+              not_valid = $12 == "NOT VALID"
               on_update = on_update ? on_update.downcase.gsub(' ', '_').to_sym : :no_action
               on_delete = on_delete ? on_delete.downcase.gsub(' ', '_').to_sym : :no_action
 
@@ -420,7 +421,8 @@ module SchemaPlus
                           :on_update => on_update,
                           :column_names => column_names.split(', '),
                           :references_column_names => references_column_names.split(', '),
-                          :deferrable => deferrable }
+                          :deferrable => deferrable,
+                          :not_valid => not_valid }
 
               foreign_keys << ForeignKeyDefinition.new(from_table_name,
                                                        references_table_name.sub(/^"(.*)"$/, '\1'),
@@ -447,3 +449,4 @@ module SchemaPlus
     end
   end
 end
+

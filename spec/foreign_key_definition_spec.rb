@@ -23,6 +23,12 @@ describe "Foreign Key definition" do
     expect(initially_deferred_definition.to_sql).to eq(%Q{CONSTRAINT posts_user_fkey FOREIGN KEY (#{quote_column_name('user')}) REFERENCES #{quote_table_name('users')} (#{quote_column_name('id')}) DEFERRABLE INITIALLY DEFERRED})
   end
 
+  it "dumps to sql with not valid value" do
+    options = {:name => "posts_user_fkey", :column_names => :user, :references_column_names => :id, :deferrable => true , :not_valid => true}
+    deferred_definition = SchemaPlus::ActiveRecord::ConnectionAdapters::ForeignKeyDefinition.new(:posts, :users, options)
+    expect(deferred_definition.to_sql).to eq(%Q{CONSTRAINT posts_user_fkey FOREIGN KEY (#{quote_column_name('user')}) REFERENCES #{quote_table_name('users')} (#{quote_column_name('id')}) DEFERRABLE NOT VALID})
+  end
+
   def quote_table_name(table)
     ActiveRecord::Base.connection.quote_table_name(table)
   end
@@ -32,3 +38,4 @@ describe "Foreign Key definition" do
   end
 
 end
+

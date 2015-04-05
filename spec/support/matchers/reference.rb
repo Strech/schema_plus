@@ -2,7 +2,7 @@ module SchemaPlusMatchers
 
   class Reference
     def initialize(expected)
-      @column_names = @on_update = @on_delete = @deferrable = @name = @references_table_name = @references_column_names = nil
+      @column_names = @on_update = @on_delete = @deferrable = @not_valid = @name = @references_table_name = @references_column_names = nil
       unless expected.empty?
         @references_column_names = Array(expected).collect(&:to_s)
         @references_table_name = @references_column_names.shift
@@ -23,6 +23,7 @@ module SchemaPlusMatchers
       @result.keep_if {|fk| fk.on_update == @on_update } if @on_update
       @result.keep_if {|fk| fk.on_delete == @on_delete } if @on_delete
       @result.keep_if {|fk| fk.deferrable == @deferrable } if @deferrable
+      @result.keep_if {|fk| fk.not_valid == @not_valid } if @not_valid
       @result.keep_if {|fk| fk.name == @name } if @name
       !@result.empty?
     end
@@ -36,6 +37,7 @@ module SchemaPlusMatchers
       with << "on_update=#{@on_update.inspect}" if @on_update
       with << "on_delete=#{@on_delete.inspect}" if @on_delete
       with << "deferrable=#{@deferrable.inspect}" if @deferrable
+      with << "not_valid=#{@not_valid.inspect}" if @not_valid
       with << "name=#{@name.inspect}" if @name
       msg += " with #{with.join(" and ")}" if with.any?
       msg
@@ -57,6 +59,11 @@ module SchemaPlusMatchers
 
     def deferrable(action)
       @deferrable = action
+      self
+    end
+
+    def not_valid(action)
+      @not_valid = action
       self
     end
 
